@@ -1,0 +1,310 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+enum Icon {
+  settings
+  chart
+  calendar
+  check
+  chip
+  compass
+  database
+  flag
+  home
+  info
+  link
+  lock
+  messages
+  notification
+  payment
+  power
+  receipt
+  shield
+  star
+  tune
+  videorecorder
+  wallet
+  warning
+  headphone
+  send
+  pipelines
+  person
+  category
+  contact
+  clipboardIcon
+}
+
+model User {
+  id               String          @id @default(uuid())
+  name             String
+  avatarUrl        String          @db.Text
+  email            String          @unique
+  connectAccountId String?         @default("")
+  customerId       String?         @default("")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  SidebarOption    SidebarOption[]
+  Subscription     Subscription?
+  subscriptionId   String?
+  AddOns           AddOns[]
+  Funnels          Funnel[]
+  Media            Media[]
+  Trigger          Trigger[]
+  Automation       Automation[]
+  Tags             Tag[]
+
+  @@index([subscriptionId])
+}
+
+model SidebarOption {
+  id        String   @id @default(uuid())
+  name      String   @default("Menu")
+  link      String   @default("#")
+  icon      Icon     @default(info)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  @@index([userId])
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String
+  color     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+
+  Ticket Ticket[]
+  User   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Pipeline {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Lane      Lane[]
+}
+
+model Lane {
+  id         String   @id @default(uuid())
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  pipelineId String
+  Tickets    Ticket[]
+  order      Int      @default(0)
+
+  @@index([pipelineId])
+}
+
+model Ticket {
+  id          String   @id @default(uuid())
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  laneId      String
+  order       Int      @default(0)
+  Lane        Lane     @relation(fields: [laneId], references: [id], onDelete: Cascade)
+  value       Decimal?
+  description String?
+  Tags        Tag[]
+
+  @@index([laneId])
+}
+
+enum TriggerTypes {
+  CONTACT_FORM
+}
+
+model Trigger {
+  id          String       @id @default(uuid())
+  name        String
+  type        TriggerTypes
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  userId      String
+  User        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Automations Automation[]
+
+  @@index([userId])
+}
+
+model Automation {
+  id                 String               @id @default(uuid())
+  name               String
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  triggerId          String?
+  published          Boolean              @default(false)
+  Trigger            Trigger?             @relation(fields: [triggerId], references: [id], onDelete: Cascade)
+  Action             Action[]
+  AutomationInstance AutomationInstance[]
+  userId             String
+  User               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([triggerId])
+  @@index([userId])
+}
+
+model AutomationInstance {
+  id           String     @id @default(uuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  automationId String
+  Automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  active       Boolean    @default(false)
+
+  @@index([automationId])
+}
+
+enum ActionType {
+  CREATE_CONTACT
+}
+
+model Action {
+  id           String     @id @default(uuid())
+  name         String
+  type         ActionType
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  automationId String
+  order        Int
+  Automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  laneId       String     @default("0")
+
+  @@index([automationId])
+}
+
+model Media {
+  id        String   @id @default(uuid())
+  type      String?
+  name      String
+  link      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Funnel {
+  id            String       @id @default(uuid())
+  name          String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  description   String?
+  published     Boolean      @default(false)
+  subDomainName String?      @unique
+  favicon       String?      @db.Text
+  FunnelPages   FunnelPage[]
+  liveProducts  String?      @default("[]")
+  ClassName     ClassName[]
+  userId        String
+  User          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ClassName {
+  id         String   @id @default(uuid())
+  name       String
+  color      String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  funnelId   String
+  customData String?  @db.Text
+  Funnel     Funnel   @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+  @@index([funnelId])
+}
+
+model FunnelPage {
+  id           String   @id @default(uuid())
+  name         String
+  pathName     String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  visits       Visit[]
+  content      String?  @db.Text
+  order        Int
+  previewImage String?  @db.Text
+  funnelId     String
+  Funnel       Funnel   @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+  @@index([funnelId])
+}
+
+model Visit {
+  id           String      @id @default(uuid())
+  createdAt    DateTime    @default(now())
+  location     String
+  FunnelPage   FunnelPage? @relation(fields: [funnelPageId], references: [id])
+  funnelPageId String?
+
+  @@index([funnelPageId])
+}
+
+enum InvitationStatus {
+  ACCEPTED
+  REVOKED
+  PENDING
+}
+
+enum Plan {
+  price_1P1aQmRrI6irc5AUoWmoS2q5
+  price_1P1aQmRrI6irc5AUmSmRO1wy
+}
+
+model Subscription {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  plan      Plan?
+  price     String?
+  active    Boolean  @default(false)
+
+  priceId              String
+  customerId           String
+  currentPeriodEndDate DateTime
+  subscritiptionId     String   @unique
+
+  userId String? @unique
+  User   User?   @relation(fields: [userId], references: [id])
+
+  @@index([customerId])
+}
+
+model AddOns {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  active    Boolean  @default(false)
+  priceId   String   @unique
+  agencyId  String?
+  userId    String?
+  User      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}

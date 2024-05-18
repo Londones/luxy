@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+    height: 100vh;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* 
+R (0)
+G (110)
+B (255 */
+
+@layer base {
+    /*:root {
+        --background: 216 100% 98.04%;
+        --foreground: 213.6 100% 4.9%;
+
+        --primary: 214.12 100% 50%;
+        --primary-foreground: 0 0% 100%;
+
+        --card: 216 100% 98.04%;
+        --card-foreground: 213.6 100% 4.9%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 213.6 100% 4.9%;
+
+        --secondary: 214.74 100% 92.55%;
+        --secondary-foreground: 216 100% 0.98%;
+
+        --muted: 213.6 100% 95.1%;
+        --muted-foreground: 0 0% 40%;
+
+        --accent: 213.6 100% 95.1%;
+        --accent-foreground: 214.12 100% 50%;
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 0 0% 90.2%;
+        --input: 0 0% 90.2%;
+        --ring: 214.12 100% 50%;
+
+        --radius: 0.5rem;
+    }*/
+
+    :root {
+    /* Name: Cannon Pink color palette
+       Author: Ilias Ism
+       URL: https://gradient.page */
+
+    /* CSS: .bg-gradient { background: var(--gradient) } */
+    --gradient: linear-gradient(to top left,#20002c,#cbb4d4);
+    --background: 301 100% 98.18%;
+    --foreground: 301 10% 0.36%;
+
+    --muted: 301 10% 90.9%;
+    --muted-foreground: 301 5% 40.9%;
+
+    --popover: 301 10% 90.9%;
+    --popover-foreground: 301 10% 0.44999999999999996%;
+
+    --card: 301 10% 90.9%;
+    --card-foreground: 301 10% 0.44999999999999996%;
+
+    --border: 301 15% 89.36%;
+    --input: 301 15% 89.36%;
+
+    --primary: 301 100% 9%;
+    --primary-foreground: 301 2% 90.9%;
+
+    --secondary: 301 5% 95.45%;
+    --secondary-foreground: 301 7% 10.9%;
+
+    --accent: 301 5% 95.45%;
+    --accent-foreground: 301 7% 10.9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --ring: 301 100% 9%;
+
+    --radius: 0.5rem;
+}
+
+    .dark {
+        /* Name: custom color palette
+       Author: Ilias Ism
+       URL: https://gradient.page */
+
+        /* CSS: .bg-gradient { background: var(--gradient) } */
+        --gradient: linear-gradient(to top left, #fbd3e9, #bb377d);
+
+        --background: -35 53.949999999999996% 7.28%;
+        --foreground: -35 8.299999999999999% 99.55%;
+
+        --muted: -35 41.5% 27.3%;
+        --muted-foreground: -35 8.299999999999999% 59.1%;
+
+        --popover: -35 48.400000000000006% 11.83%;
+        --popover-foreground: -35 8.299999999999999% 99.55%;
+
+        --card: -35 48.400000000000006% 11.83%;
+        --card-foreground: -35 8.299999999999999% 99.55%;
+
+        --border: -35 41.5% 27.3%;
+        --input: -35 41.5% 27.3%;
+
+        --primary: -35 83% 91%;
+        --primary-foreground: -35 8.299999999999999% 9.1%;
+
+        --secondary: -35 41.5% 27.3%;
+        --secondary-foreground: -35 8.299999999999999% 99.55%;
+
+        --accent: -35 41.5% 27.3%;
+        --accent-foreground: -35 8.299999999999999% 99.55%;
+
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: -35 8.299999999999999% 99.55%;
+
+        --ring: -35 83% 91%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+.dotPattern {
+    background-image: radial-gradient(rgb(35, 40, 68) 1px, transparent 1px);
+    background-size: 25px 25px;
+}
+
+.use-automation-zoom-in {
+    animation: automation-zoom-in 0.5s;
+}
+
+@keyframes automation-zoom-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
